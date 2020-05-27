@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:pb="http://teipublisher.com/1.0" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Early English Books
+                 <desc>Early English Books Online</desc>
+                </title>
+                <title type="short">EEBO</title>
+            </titleStmt>
+            <publicationStmt>
+                <publisher>TEI Consortium</publisher>
+                <availability>
+                    <licence target="http://creativecommons.org/licenses/by-sa/3.0/"> Distributed under a
+                        Creative Commons Attribution-ShareAlike 3.0 Unported License </licence>
+                    <licence target="http://www.opensource.org/licenses/BSD-2-Clause">
+                        <p>Copyright 2014 TEI Consortium.</p>
+                        <p>All rights reserved.</p>
+                        <p>Redistribution and use in source and binary forms, with or without
+                            modification, are permitted provided that the following conditions are met:</p>
+                        <list>
+                            <item>Redistributions of source code must retain the above copyright notice,
+                                this list of conditions and the following disclaimer.</item>
+                            <item>Redistributions in binary form must reproduce the above copyright notice,
+                                this list of conditions and the following disclaimer in the documentation
+                                and/or other materials provided with the distribution.</item>
+                        </list>
+                        <p>This software is provided by the copyright holders and contributors "as is" and
+                            any express or implied warranties, including, but not limited to, the implied
+                            warranties of merchantability and fitness for a particular purpose are
+                            disclaimed. In no event shall the copyright holder or contributors be liable
+                            for any direct, indirect, incidental, special, exemplary, or consequential
+                            damages (including, but not limited to, procurement of substitute goods or
+                            services; loss of use, data, or profits; or business interruption) however
+                            caused and on any theory of liability, whether in contract, strict liability,
+                            or tort (including negligence or otherwise) arising in any way out of the use
+                            of this software, even if advised of the possibility of such damage.</p>
+                    </licence>
+                    <p>TEI material can be licensed differently depending on the use you intend to make
+                        of it. Hence it is made available under both the CC+BY and BSD-2 licences. The
+                        CC+BY licence is generally appropriate for usages which treat TEI content as data
+                        or documentation. The BSD-2 licence is generally appropriate for usage of TEI
+                        content in a software environment. For further information or clarification,
+                        please contact the <ref target="mailto:info@tei-c.org">TEI Consortium</ref>. </p>
+                </availability>
+            </publicationStmt>
+            <sourceDesc>
+                <p>created by Wolfgang for tei-simple-pm app</p>
+            </sourceDesc>
+        </fileDesc>
+    </teiHeader>
+    <text>
+        <body>
+            <schemaSpec ident="eebo" start="TEI teiCorpus" source="teipublisher.odd">
+                <elementSpec ident="floatingText" mode="change">
+                    <model behaviour="block">
+            <outputRendition xml:space="preserve">
+            margin: 10px; padding: 10px; border: solid black 1pt;
+            </outputRendition>
+        </model>
+                </elementSpec>
+                <elementSpec ident="seg" mode="change">
+                    <model predicate="@rend='decorInit'" behaviour="inline" useSourceRendition="true">
+            <outputRendition xml:space="preserve">
+            font-size: 3em; line-height: 0.9em;
+            </outputRendition>
+        </model>
+                    <model behaviour="inline" useSourceRendition="true"/>
+                </elementSpec>
+                <elementSpec ident="pb" mode="change">
+                    <model output="latex" behaviour="text">
+            <param name="content" value="'%'"/>
+        </model>
+                    <model predicate="count(../*) = 1 and parent::div" behaviour="inline" useSourceRendition="true">
+            <param name="content" value="'[Empty page]'"/>
+            <outputRendition xml:space="preserve">
+            color: #CCC;
+            </outputRendition>
+        </model>
+                    <model behaviour="omit"/>
+                </elementSpec>
+            <elementSpec ident="biblFull" mode="add">
+                    <model behaviour="inline">
+            <param name="content" value="(titleStmt, publicationStmt)"/>
+        </model>
+                </elementSpec>
+                <elementSpec ident="titleStmt" mode="change">
+                    <model output="latex" behaviour="meta">
+            <param name="content" value="."/>
+        </model>
+                    <model output="fo" behaviour="heading"/>
+                    <model predicate="$parameters?mode='metadata'" behaviour="inline">
+            <param name="content" value="(title[1], author)"/>
+        </model>
+                    <modelSequence output="web" predicate="$parameters?header='short'">
+            <model behaviour="link">
+                <param name="content" value="title[1]"/>
+                <param name="uri" value="$parameters?doc"/>
+            </model>
+            <model behaviour="block">
+                <param name="content" value="subsequence(title, 2)"/>
+            </model>
+            <model behaviour="block">
+                <param name="content" value="author"/>
+            </model>
+        </modelSequence>
+                    <model output="web" behaviour="block"/>
+                </elementSpec>
+                <elementSpec ident="publicationStmt" mode="change">
+                    <model predicate="$parameters?mode='metadata'" behaviour="inline"/>
+                    <model output="web" behaviour="block">
+            <param name="content" value="availability/licence"/>
+        </model>
+                    <model behaviour="omit"/>
+                </elementSpec>
+                <elementSpec ident="publisher" mode="change">
+                    <model predicate="$parameters?mode=&#34;metadata&#34;" behaviour="inline"/>
+                    <model predicate="ancestor::teiHeader" behaviour="omit"/>
+                </elementSpec>
+                <elementSpec ident="pubPlace" mode="change">
+                    <model predicate="$parameters?mode=&#34;metadata&#34;" behaviour="inline"/>
+                    <model predicate="ancestor::teiHeader" behaviour="omit"/>
+                </elementSpec>
+                <elementSpec ident="title" mode="change">
+                    <model predicate="$parameters?mode='metadata'" behaviour="heading">
+            <param name="level" value="3"/>
+            <outputRendition xml:space="preserve">
+            font-family: 'IM Fell English', serif;
+font-weight: normal;
+margin-top: 0;
+margin-bottom: .25em;
+            </outputRendition>
+        </model>
+                    <model predicate="$parameters?header='short'" behaviour="heading">
+            <param name="level" value="5"/>
+        </model>
+                    <modelSequence predicate="parent::titleStmt/parent::fileDesc">
+            <model predicate="preceding-sibling::title" behaviour="text">
+                <param name="content" value="' — '"/>
+            </model>
+            <model behaviour="inline"/>
+        </modelSequence>
+                    <model predicate="not(@level) and parent::bibl" behaviour="inline"/>
+                    <modelSequence predicate="@level='m' or not(@level)">
+            <model behaviour="inline">
+                <outputRendition xml:space="preserve">
+                font-style: italic;
+                </outputRendition>
+            </model>
+            <model predicate="ancestor::biblFull" behaviour="text">
+                <param name="content" value="', '"/>
+            </model>
+        </modelSequence>
+                    <modelSequence predicate="@level='s' or @level='j'">
+            <model behaviour="inline">
+                <outputRendition xml:space="preserve">
+                font-style: italic;
+                </outputRendition>
+            </model>
+            <model predicate="following-sibling::* and     (  ancestor::biblFull)" behaviour="text">
+                <param name="content" value="', '"/>
+            </model>
+        </modelSequence>
+                    <modelSequence predicate="@level='u' or @level='a'">
+            <model behaviour="inline">
+                <outputRendition xml:space="preserve">
+                font-style: italic;
+                </outputRendition>
+            </model>
+            <model predicate="following-sibling::* and     (    ancestor::biblFull)" behaviour="text">
+                <param name="content" value="'. '"/>
+            </model>
+        </modelSequence>
+                    <model behaviour="inline">
+            <outputRendition xml:space="preserve">
+            font-style: italic;
+            </outputRendition>
+        </model>
+                </elementSpec>
+                <elementSpec ident="author" mode="change">
+                    <model predicate="$parameters?mode='metadata'" behaviour="inline"/>
+                    <model predicate="ancestor::teiHeader" behaviour="block">
+            <outputRendition xml:space="preserve" scope="before">
+            content: 'By ';
+            </outputRendition>
+        </model>
+                    <model behaviour="inline"/>
+                </elementSpec>
+            <elementSpec ident="gap" mode="change">
+                    <model predicate="desc" behaviour="inline">
+            <param name="content" value="desc"/>
+            <outputRendition xml:space="preserve">
+            color: grey;
+            </outputRendition>
+        </model>
+                    <model predicate="@extent" behaviour="inline">
+            <param name="content" value="@extent"/>
+            <outputRendition xml:space="preserve" scope="before">
+            content: '[..';
+            </outputRendition>
+            <outputRendition xml:space="preserve" scope="after">
+            content: '..]';
+            </outputRendition>
+            <outputRendition xml:space="preserve">
+            color: grey;
+            </outputRendition>
+        </model>
+                    <model behaviour="inline">
+            <outputRendition xml:space="preserve" scope="before">
+            content: '[...]';
+            </outputRendition>
+        </model>
+                </elementSpec>
+                <elementSpec ident="desc" mode="change"/>
+            </schemaSpec>
+        </body>
+    </text>
+</TEI>

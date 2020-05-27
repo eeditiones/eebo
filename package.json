@@ -1,0 +1,8 @@
+{
+  "description" : "Early English Books Online",
+  "version" : "1.0.0",
+  "dependencies" : {
+    "@teipublisher/pb-components" : "0.9.33"
+  },
+  "name" : "eebo6"
+}

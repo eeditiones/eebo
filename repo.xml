@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta xmlns="http://exist-db.org/xquery/repo">
+    <description>Early English Books Online</description>
+    <author/>
+    <status>beta</status>
+    <license>GNU-LGPL</license>
+    <copyright>true</copyright>
+    <type>application</type>
+    <prepare>pre-install.xql</prepare>
+    <finish>post-install.xql</finish>
+    <target>eebo6</target>
+    <permissions user="eebo" group="tei" mode="rw-r--r--"/>
+<deployed>2020-05-27T10:31:28.513+02:00</deployed>
+</meta>
