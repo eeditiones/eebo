@@ -44,23 +44,17 @@ declare function idx:get-metadata($root as element(), $field as xs:string) {
                     $header/@xml:lang
                 ))
             case "date" return head((
-                $header//tei:correspDesc/tei:correspAction/tei:date/@when,
-                $header//tei:sourceDesc/(tei:bibl|tei:biblFull)/tei:publicationStmt/tei:date,
-                $header//tei:sourceDesc/(tei:bibl|tei:biblFull)/tei:date/@when,
                 $header//tei:fileDesc/tei:editionStmt/tei:edition/tei:date,
-                $header//tei:publicationStmt/tei:date
+                replace($header//tei:sourceDesc/tei:biblFull/tei:publicationStmt/tei:date, "^.*(\d+{4}).*$", "$1")
             ))
-            case "genre" return (
-                idx:get-genre($header),
-                $root/dbk:info/dbk:keywordset[@vocab="#genre"]/dbk:keyword
-            )
+            case "genre" return
+                idx:get-genre($header)
             default return
                 ()
 };
 
 declare function idx:get-genre($header as element()?) {
-    for $target in $header//tei:textClass/tei:catRef[@scheme="#genre"]/@target
-    let $category := id(substring($target, 2), doc($idx:app-root || "/data/taxonomy.xml"))
+    for $term in $header//tei:keywords/tei:term
     return
-        $category/ancestor-or-self::tei:category[parent::tei:category]/tei:catDesc
+        replace(tokenize($term, "\s*\-\-\s*")[1], "^(.*?)\.?$", "$1")
 };

@@ -1,6 +1,6 @@
 body {
-    --pb-splash-background-image: url(../images/tei-publisher-logo-color.svg);
-    --pb-splash-background-size: 360px auto;
+    --pb-splash-background-image: url(../images/eebo-small.png);
+    --pb-splash-background-size: 128px auto;
     --pb-base-font-family: 'Roboto', 'Noto', sans-serif;
     --pb-base-font-size: 16px;
     --pb-base-line-height: 1.42857143;
@@ -18,7 +18,8 @@ body {
     --pb-color-lighter: #35424b;
     --pb-color-focus: #f6a623;
     --pb-drawer-background-color: var(--pb-color-inverse);
-    --pb-menubar-background-color: #35424b;
+    --pb-menubar-background-color: #607D8B;
+    --pb-menubar-background-image: url(../images/eebo-bg.png);
     --pb-menubar-color: var(--pb-color-inverse);
     --pb-toolbar-background-color: #d1dae0;
     --pb-toolbar-color: var(--pb-color-primary);
@@ -141,6 +142,7 @@ app-drawer-layout:not([narrow]) [drawer-toggle] {
 
 .menubar {
     justify-content: space-between;
+    background-image: var(--pb-menubar-background-image);
     background-color: var(--pb-menubar-background-color);
     color: var(--pb-menubar-color);
     --pb-search-suggestions-color: var(--pb-color-primary);

@@ -98,24 +98,34 @@ declare variable $config:pagination-fill := 5;
 declare variable $config:facets := [
     map {
         "dimension": "genre",
-        "heading": "facets.genre",
+        "heading": "Genre",
         "max": 5,
-        "hierarchical": true()
+        "hierarchical": false()
     },
     map {
         "dimension": "language",
-        "heading": "facets.language",
+        "heading": "Language",
         "max": 5,
         "hierarchical": false(),
         "output": function($label) {
             switch($label)
-                case "de" return "German"
-                case "es" return "Spanish"
-                case "la" return "Latin"
-                case "fr" return "French"
-                case "en" return "English"
+                case "ger" return "German"
+                case "dut" return "Dutch"
+                case "grc" return "Greek"
+                case "ita" return "Italian"
+                case "spa" return "Spanish"
+                case "lat" return "Latin"
+                case "fre" return "French"
+                case "eng" return "English"
+                case "sco" return "Scots"
+                case "wel" return "Welsh"
                 default return $label
         }
+    },
+    map {
+        "dimension": "date",
+        "heading": "Year",
+        "max": 5
     }
 ];
 

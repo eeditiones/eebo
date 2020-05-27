@@ -48,16 +48,6 @@ declare function local:mkcol($collection, $path) {
     local:mkcol-recursive($collection, tokenize($path, "/"))
 };
 
-declare function local:create-data-collection() {
-    if (xmldb:collection-available($config:data-root)) then
-        ()
-    else if (starts-with($config:data-root, $target)) then
-        local:mkcol($target, substring-after($config:data-root, $target || "/"))
-    else
-        ()
-};
-
-
 declare function local:generate-code($collection as xs:string) {
     let $allOdds := xmldb:get-child-resources($collection || "/resources/odd")[ends-with(., ".odd")]
     let $odds :=
@@ -114,4 +104,8 @@ sm:chgrp(xs:anyURI($target || "/modules/lib/latex.xql"), "dba"),
 
 local:mkcol($target, "transform"),
 local:generate-code($target),
-local:create-data-collection()
+if (not(xmldb:collection-available("/db/eebo"))) then
+    local:mkcol("/db", "eebo")
+else
+    (),
+xmldb:copy-resource($target, "index.xql", "/db/eebo", "index.xql")
