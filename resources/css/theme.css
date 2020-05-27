@@ -231,6 +231,7 @@ pb-view {
 .breadcrumbs pb-view {
     font-weight: 400;
     font-size: var(--pb-breadcrumbs-font-size);
+    max-width: none;
 }
 
 @media (min-width: 769px) {
