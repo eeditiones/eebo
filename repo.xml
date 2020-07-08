@@ -9,6 +9,6 @@
     <prepare>pre-install.xql</prepare>
     <finish>post-install.xql</finish>
     <target>eebo</target>
-    <permissions user="eebo" group="tei" mode="rw-r--r--"/>
-<deployed>2020-05-27T10:31:28.513+02:00</deployed>
+    <permissions user="eebo" group="tei" password="eebo" mode="rw-r--r--"/>
+    <deployed>2020-05-27T10:31:28.513+02:00</deployed>
 </meta>

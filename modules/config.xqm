@@ -26,7 +26,7 @@ declare namespace tei="http://www.tei-c.org/ns/1.0";
  : If a version is given, the components will be loaded from a public CDN.
  : This is recommended unless you develop your own components.
  :)
-declare variable $config:webcomponents :="0.9.33";
+declare variable $config:webcomponents :="1.0.2";
 
 (:~
  : CDN URL to use for loading webcomponents. Could be changed if you created your
@@ -215,7 +215,7 @@ declare variable $config:fop-config :=
  : arguments.
  :)
 declare variable $config:tex-command := function($file) {
-    ( "/usr/local/bin/pdflatex", "-interaction=nonstopmode", $file )
+    ( "/usr/bin/pdflatex", "-interaction=nonstopmode", $file )
 };
 
 (:
