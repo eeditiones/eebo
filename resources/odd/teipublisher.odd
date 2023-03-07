@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:pb="http://teipublisher.com/1.0" xml:lang="en">
+<?xml-model href="teipublisher_odds.xsd"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:pb="http://teipublisher.com/1.0" xml:lang="en">
     <teiHeader>
         <fileDesc>
             <titleStmt>
@@ -30,6 +29,9 @@
                 <p>born digital</p>
             </sourceDesc>
         </fileDesc>
+        <encodingDesc>
+            <tagsDecl/>
+        </encodingDesc>
         <revisionDesc>
             <change when="2017-09-08">adjust metadata in teiHeader</change>
         </revisionDesc>
@@ -194,13 +196,59 @@
         </model>
                 </elementSpec>
             <elementSpec ident="ref" mode="change">
-        <model predicate="not(@target)" behaviour="inline"/>
-        <model predicate="not(node())" behaviour="link">
+                    <model predicate="not(@target)" behaviour="inline"/>
+                    <model predicate="not(node())" behaviour="link">
             <param name="content" value="@target"/>
             <param name="uri" value="@target"/>
         </model>
-        <model behaviour="link">
+                    <model behaviour="link">
             <param name="uri" value="@target"/>
+        </model>
+                </elementSpec>
+            <elementSpec ident="note" mode="change">
+                    <model behaviour="note">
+            <param name="place" value="@place"/>
+            <param name="label" value="@n"/>
+        </model>
+                </elementSpec>
+            <elementSpec ident="notatedMusic" mode="add">
+                    <model behaviour="figure">
+            <param name="title" value="label"/>
+            <param name="content" value="ptr"/>
+        </model>
+                </elementSpec>
+                <elementSpec ident="ptr" mode="add">
+                    <model predicate="parent::notatedMusic" behaviour="pass-through">
+            <param name="url" value="@target"/>
+            <pb:template xmlns="" xml:space="preserve"><pb-mei url="[[url]]" player="player">
+  <pb-option name="appXPath" on="./rdg[contains(@label, 'original')]" off="">Original Clefs</pb-option>
+</pb-mei></pb:template>
+        </model>
+                </elementSpec>
+            <elementSpec ident="formula" mode="change">
+                    <model predicate="@rendition='simple:display'" behaviour="block"/>
+                    <model output="latex" predicate="@rend=&#34;display&#34;" behaviour="inline">
+            <param name="content" value="string()"/>
+            <pb:template xmlns="" xml:space="preserve">\begin{equation}[[content]]\end{equation}</pb:template>
+        </model>
+                    <model output="latex" behaviour="inline">
+            <param name="content" value="string()"/>
+            <pb:template xmlns="" xml:space="preserve">\begin{math}[[content]]\end{math}</pb:template>
+        </model>
+                    <model predicate="@rend='display'" behaviour="webcomponent">
+            <param name="name" value="'pb-formula'"/>
+            <param name="display" value="true()"/>
+        </model>
+                    <model behaviour="webcomponent">
+            <param name="name" value="'pb-formula'"/>
+        </model>
+                </elementSpec>
+            <elementSpec ident="p" mode="change">
+        <model output="print" predicate="ancestor::note" behaviour="inline"/>
+        <model behaviour="paragraph" useSourceRendition="true">
+            <outputRendition xml:space="preserve">
+            text-align: justify;
+            </outputRendition>
         </model>
     </elementSpec>
             </schemaSpec>
