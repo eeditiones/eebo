@@ -8,9 +8,9 @@
 	"servers": [
 		{
 			"description": "Endpoint for testing on localhost",
-			"url": "http://localhost:8080/exist/apps/eebo"
+			"url": "/exist/apps/eebo"
 		}
-	],
+	],	
 	"tags": [
 		{
 			"name": "documents",
