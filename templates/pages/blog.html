@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <html>
     <head>
         <meta charset="utf-8"/>
@@ -12,19 +11,14 @@
         <title data-template="config:app-title"/>
         <meta name="description" content="Blog"/>
 
-        <link rel="stylesheet" type="text/css" href="resources/fonts/font.css"/>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald"/>
         <link rel="stylesheet" href="resources/css/theme.css"/>
         <script type="module" src="pb-components-bundle.js" data-template="pages:load-components"/>
         <custom-style>
             <style>
                 body {
-                    --pb-view-height: calc(100vh - 200px);
-                }
-
-                pb-view {
-                    font-family: var(--pb-base-font-family);
-                    font-size: 20px;
+                    --pb-view-height: calc(100vh - 128px);
+                    --pb-view-max-width: 1024px;
+                    --pb-content-font-family: var(----pb-base-font-family);
                 }
 
                 .toolbar pb-navigation {
@@ -52,28 +46,23 @@
 
                     .content-body {
                         position: relative;
-                        display: flex;
-                        justify-content: space-between;
+                        display: grid;
+                        grid-template-columns: auto 1fr;
                         margin: 0 16px;
                     }
 
                     aside {
-                        flex: 1 0;
                         min-width: 300px;
                         max-width: 400px;
-                        height: var(--pb-view-height);
                         overflow: auto;
-                    }
-
-                    #view1 {
-                        width: 36em;
-                        max-width: 100%;
+                        height: var(--pb-view-height);
                     }
 
                     .content {
-                        flex: 3 1;
+                        height: var(--pb-view-height);
                         margin: 8px 0 8px 32px;
                         font-size: 1.2em;
+                        overflow: auto;
                     }
                 }
 
@@ -85,12 +74,6 @@
                 .summary ul {
                     list-style: none;
                     padding: 0;
-                }
-
-                .pubdate::before {
-                    content: '\00B7';
-                    padding-right: 8px;
-                    padding-left: 8px;
                 }
 
                 .pubdate {
@@ -120,13 +103,11 @@
                             <pb-collapse>
                                 <h3 slot="collapse-trigger">Articles</h3>
                                 <div slot="collapse-content">
-                                    <pb-load class="summary" url="modules/blog.xql?doc=${doc}" auto="auto" emit="transcription" data-template="pages:parse-params"/>
+                                    <pb-load class="summary" url="doc/blog/list?doc=${doc}" auto="auto" emit="transcription" data-template="lib:parse-params"/>
                                 </div>
                             </pb-collapse>
                             <pb-collapse>
-                                <h3 slot="collapse-trigger">
-                                    <pb-i18n key="menu.download.title">Download</pb-i18n>
-                                </h3>
+                                <h3 slot="collapse-trigger"><pb-i18n key="menu.download.title">Download</pb-i18n></h3>
                                 <paper-listbox slot="collapse-content">
                                     <paper-item>
                                         <pb-download type="tex" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.pdf-latex" title="i18n(pdf-latex)">
@@ -162,9 +143,7 @@
                             </pb-collapse>
                             <pb-restricted login="login">
                                 <pb-collapse>
-                                    <h3 slot="collapse-trigger">
-                                        <pb-i18n key="menu.admin.title">Admin</pb-i18n>
-                                    </h3>
+                                    <h3 slot="collapse-trigger"><pb-i18n key="menu.admin.title">Admin</pb-i18n></h3>
                                     <paper-listbox slot="collapse-content">
                                         <paper-item>
                                             <pb-download data-template="pages:edit-odd-link" src="document1">
@@ -172,7 +151,7 @@
                                             </pb-download>
                                         </paper-item>
                                         <paper-item>
-                                            <a href="${app}/manage.html" data-template="pages:parse-params">
+                                            <a href="${app}/manage.html" data-template="lib:parse-params">
                                                 <pb-i18n key="menu.admin.appGenerator"/>
                                             </a>
                                         </paper-item>
@@ -185,19 +164,21 @@
 
                 <app-header-layout>
                     <app-header slot="header" reveals="reveals" fixed="fixed" effects="waterfall">
-                        <app-toolbar data-template="templates:include" data-template-path="templates/menu.html"/>
-                        <app-toolbar data-template="templates:include" data-template-path="templates/toolbar.html"/>
+                        <app-toolbar data-template="lib:include" data-template-path="templates/menu.html"/>
+                        <app-toolbar data-template="lib:include" data-template-path="templates/toolbar.html"/>
                     </app-header>
 
                     <main class="content-body">
                         <pb-media-query query="min-width: 1024px">
                             <aside>
                                 <h1>Blog</h1>
-                                <pb-load class="summary" url="modules/blog.xql?doc=${doc}" auto="auto" emit="transcription" data-template="pages:parse-params"/>
+                                <pb-load class="summary" url="doc/blog/list?doc=${doc}" auto="auto" emit="transcription" data-template="lib:parse-params"/>
                             </aside>
                         </pb-media-query>
                         <div class="content">
-                            <pb-view id="view1" src="document1" view="single" subscribe="transcription" emit="transcription" append-footnotes="append-footnotes" odd="docbook"/>
+                            <pb-view id="view1" src="document1" view="single" subscribe="transcription" load-css="odd/docbook.css" emit="transcription" append-footnotes="append-footnotes" odd="docbook">
+                                <pb-param name="skipAuthors" value="true"/>
+                            </pb-view>
                         </div>
                     </main>
                 </app-header-layout>

@@ -1,6 +1,7 @@
 xquery version "3.0";
 
 import module namespace pmu="http://www.tei-c.org/tei-simple/xquery/util";
+import module namespace pmc="http://www.tei-c.org/tei-simple/xquery/config";
 import module namespace odd="http://www.tei-c.org/tei-simple/odd2odd";
 import module namespace config="http://www.tei-c.org/tei-simple/config" at "modules/config.xqm";
 import module namespace tpu="http://www.tei-c.org/tei-publisher/util" at "util.xql";
@@ -48,21 +49,25 @@ declare function local:mkcol($collection, $path) {
     local:mkcol-recursive($collection, tokenize($path, "/"))
 };
 
+declare function local:create-data-collection() {
+    if (xmldb:collection-available($config:data-root)) then
+        ()
+    else if (starts-with($config:data-root, $target)) then
+        local:mkcol($target, substring-after($config:data-root, $target || "/"))
+    else
+        ()
+};
+
+
 declare function local:generate-code($collection as xs:string) {
-    let $allOdds := xmldb:get-child-resources($collection || "/resources/odd")[ends-with(., ".odd")]
-    let $odds :=
-        if (count($allOdds) > 3) then
-            $allOdds[not(.=("teipublisher.odd", "tei_simplePrint.odd"))]
-        else
-            $allOdds
-    for $source in $odds
+    for $source in ($config:odd-available, $config:odd-internal)
     let $odd := doc($collection || "/resources/odd/" || $source)
     let $pi := tpu:parse-pi($odd, (), $source)
     for $module in
         if ($pi?output) then
             tokenize($pi?output)
         else
-            ("web", "print", "latex", "epub")
+            ("web", "print", "latex", "epub", "fo")
     for $file in pmu:process-odd (
         (:    $odd as document-node():)
         odd:get-compiled($collection || "/resources/odd" , $source),
@@ -71,9 +76,10 @@ declare function local:generate-code($collection as xs:string) {
         (:    $mode as xs:string    :)
         $module,
         (:    $relPath as xs:string    :)
-        "../transform",
+        "transform",
         (:    $config as element(modules)?    :)
-        doc($collection || "/resources/odd/configuration.xml")/*)?("module")
+        doc($collection || "/resources/odd/configuration.xml")/*,
+        $module = "web")
     return
         (),
     let $permissions := $repoxml//repo:permissions[1]
@@ -87,25 +93,13 @@ declare function local:generate-code($collection as xs:string) {
     )
 };
 
-sm:chmod(xs:anyURI($target || "/modules/view.xql"), "rwxr-Sr-x"),
-(:sm:chmod(xs:anyURI($target || "/modules/transform.xql"), "rwsr-xr-x"),:)
-sm:chmod(xs:anyURI($target || "/modules/lib/pdf.xql"), "rwsr-xr-x"),
-sm:chmod(xs:anyURI($target || "/modules/lib/get-epub.xql"), "rwsr-xr-x"),
-sm:chmod(xs:anyURI($target || "/modules/lib/components.xql"), "rwsr-xr-x"),
-sm:chmod(xs:anyURI($target || "/modules/lib/components-odd.xql"), "rwxr-Sr-x"),
-sm:chmod(xs:anyURI($target || "/modules/lib/regenerate.xql"), "rwsr-xr-x"),
-sm:chmod(xs:anyURI($target || "/modules/lib/app-download.xql"), "rwsr-xr-x"),
-sm:chmod(xs:anyURI($target || "/modules/lib/dts.xql"), "rwsr-xr-x"),
-(: sm:chmod(xs:anyURI($target || "/modules/lib/upload.xql"), "rwsr-xr-x"), :)
-
-(: LaTeX requires dba permissions to execute shell process :)
-sm:chmod(xs:anyURI($target || "/modules/lib/latex.xql"), "rwxr-Sr-x"),
-sm:chgrp(xs:anyURI($target || "/modules/lib/latex.xql"), "dba"),
+(: API needs dba rights for LaTeX :)
+sm:chgrp(xs:anyURI($target || "/modules/lib/api-dba.xql"), "dba"),
+sm:chmod(xs:anyURI($target || "/modules/lib/api-dba.xql"), "rwxr-Sr-x"),
 
 local:mkcol($target, "transform"),
 local:generate-code($target),
-if (not(xmldb:collection-available("/db/eebo"))) then
-    local:mkcol("/db", "eebo")
-else
-    (),
-xmldb:copy-resource($target, "index.xql", "/db/eebo", "index.xql")
+local:create-data-collection(),
+let $pmuConfig := pmc:generate-pm-config(($config:odd-available, $config:odd-internal), $config:default-odd, $config:odd-root)
+return
+    xmldb:store($config:app-root || "/modules", "pm-config.xql", $pmuConfig, "application/xquery")

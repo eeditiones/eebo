@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <html>
     <head>
         <meta charset="utf-8"/>
@@ -11,34 +10,35 @@
 
         <title data-template="config:app-title"/>
         <meta name="description" content="Documentation"/>
-        <link rel="stylesheet" type="text/css" href="resources/fonts/font.css"/>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald"/>
         <link rel="stylesheet" href="resources/css/theme.css"/>
         <link rel="stylesheet" href="../templates/pages/documentation.css"/>
         <script type="module" src="pb-components-bundle.js" data-template="pages:load-components"/>
     </head>
 
     <body>
-        <pb-page data-template="pages:pb-page" unresolved="unresolved">
+        <pb-page data-template="pages:pb-page" unresolved="unresolved" url-template="/{+path}{#id}">
             <pb-document id="document1" data-template="pages:pb-document"/>
             <app-drawer-layout force-narrow="force-narrow">
-                <app-drawer data-template="templates:include" data-template-path="templates/drawer.html"/>
+                <app-drawer data-template="lib:include" data-template-path="templates/drawer.html"/>
                 <app-header-layout>
                     <app-header slot="header" reveals="reveals" fixed="fixed" effects="waterfall">
-                        <app-toolbar data-template="templates:include" data-template-path="templates/menu.html"/>
-                        <app-toolbar data-template="templates:include" data-template-path="templates/toolbar.html"/>
+                        <app-toolbar data-template="lib:include" data-template-path="templates/menu.html"/>
+                        <!-- Overwrite toolbar to change navigation to parent button -->
+                        <app-toolbar data-template="lib:include" data-template-path="templates/toolbar.html">
+                            <a href="${app}/index.html" data-i18n="[title]browse.${collection}.title" title="" data-template="lib:parse-params" data-target="toolbar-parent">
+                                <paper-icon-button icon="icons:folder-open"/>
+                            </a>
+                        </app-toolbar>
                     </app-header>
 
                     <main>
                         <pb-drawer class="toc" toggle="tocToggle" emit="toc" subscribe="transcription" max-width="1024px">
-                            <pb-load url="templates/toc.html?target=transcription" src="document1" auto="auto" emit="toc">
-                                <pb-i18n key="dialogs.loading">Loading</pb-i18n>
-                            </pb-load>
+                            <pb-load url="api/document/{doc}/contents?target=transcription&amp;icons=false" expand="expand" src="document1" auto="auto" emit="toc"><pb-i18n key="dialogs.loading">Loading</pb-i18n></pb-load>
                         </pb-drawer>
                         <pb-view class="breadcrumbs" src="document1" subscribe="transcription">
                             <pb-param name="mode" value="breadcrumbs"/>
                         </pb-view>
-                        <pb-view id="view1" src="document1" load-css="../odd/docbook.css" column-separator=".tei-cb" append-footnotes="append-footnotes" subscribe="transcription" emit="transcription" wait-for="toc"/>
+                        <pb-view id="view1" src="document1" load-css="odd/docbook.css" column-separator=".tei-cb" append-footnotes="append-footnotes" subscribe="transcription" emit="transcription" wait-for="toc"/>
                         <footer>
                             <!-- Navigate to next page -->
                             <pb-navigation direction="forward" keyboard="right" emit="transcription" subscribe="transcription">

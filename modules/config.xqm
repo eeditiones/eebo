@@ -10,7 +10,7 @@ import module namespace http="http://expath.org/ns/http-client" at "java:org.exi
 import module namespace nav="http://www.tei-c.org/tei-simple/navigation" at "navigation.xql";
 import module namespace tpu="http://www.tei-c.org/tei-publisher/util" at "lib/util.xql";
 
-declare namespace templates="http://exist-db.org/xquery/templates";
+declare namespace templates="http://exist-db.org/xquery/html-templating";
 
 declare namespace repo="http://exist-db.org/xquery/repo";
 declare namespace expath="http://expath.org/ns/pkg";
@@ -20,19 +20,28 @@ declare namespace tei="http://www.tei-c.org/ns/1.0";
 (:~~
  : The version of the pb-components webcomponents library to be used by this app.
  : Should either point to a version published on npm,
- : or be set to 'local'. In the latter case, webcomponents
+ : or be set to 'local' or 'dev'. 
+ : 
+ : If set to 'local', webcomponents
  : are assumed to be self-hosted in the app (which means you
- : have to npm install it yourself using the existing package.json).
+ : have to npm install them yourself using the existing package.json).
+ : 
  : If a version is given, the components will be loaded from a public CDN.
  : This is recommended unless you develop your own components.
+ : 
+ : Using 'dev' will try to load the components from a local development
+ : server started from within the pb-components repo clone by using `npm start`.
+ : In this case, change $config:webcomponents-cdn to point to http://localhost:port 
+ : (default: 8000, but check where your server is running).
  :)
-declare variable $config:webcomponents :="1.0.2";
+declare variable $config:webcomponents :="2.3.0";
 
 (:~
  : CDN URL to use for loading webcomponents. Could be changed if you created your
  : own library extending pb-components and published it to a CDN.
  :)
-declare variable $config:webcomponents-cdn := "https://unpkg.com/@teipublisher/pb-components";
+declare variable $config:webcomponents-cdn := "https://cdn.jsdelivr.net/npm/@teipublisher/pb-components"; 
+(: declare variable $config:webcomponents-cdn := "http://localhost:8000"; :)
 
 (:~~
  : A list of regular expressions to check which external hosts are
@@ -42,6 +51,18 @@ declare variable $config:webcomponents-cdn := "https://unpkg.com/@teipublisher/p
 declare variable $config:origin-whitelist := (
     "(?:https?://localhost:.*|https?://127.0.0.1:.*)"
 );
+
+(:~
+ : Set to true to allow caching: if the browser sends an If-Modified-Since header,
+ : TEI Publisher will respond with a 304 if the resource has not changed since last
+ : access. However, this does *not* take into account changes to ODD or other auxiliary 
+ : files, so don't use it during development.
+ :)
+declare variable $config:enable-proxy-caching :=
+    let $prop := util:system-property("teipublisher.proxy-caching")
+    return
+        exists($prop) and lower-case($prop) = 'true'
+;
 
 (:~
  : Should documents be located by xml:id or filename?
@@ -281,14 +302,18 @@ declare variable $config:app-root :=
  : but may need to be changed if the app is behind a proxy.
  :)
 declare variable $config:context-path :=
-   request:get-context-path() || substring-after($config:app-root, "/db")
-    (: "" :)
+    let $prop := util:system-property("teipublisher.context-path")
+    return
+        if (empty($prop) or $prop = "auto") then
+            request:get-context-path() || substring-after($config:app-root, "/db")
+        else
+            $prop
 ;
 
 (:~
  : The root of the collection hierarchy containing data.
  :)
-declare variable $config:data-root :="/db/eebo";
+declare variable $config:data-root := "/db/apps/eebo-data/data";
 
 (:~
  : The root of the collection hierarchy whose files should be displayed
@@ -296,13 +321,31 @@ declare variable $config:data-root :="/db/eebo";
  :)
 declare variable $config:data-default := $config:data-root;
 
+(:~
+ : A sequence of root elements which should be excluded from the list of
+ : documents displayed in the browsing view.
+ :)
 declare variable $config:data-exclude :=
     doc($config:data-root || "/taxonomy.xml")/tei:TEI
 ;
 
+(:~
+ : The main ODD to be used by default
+ :)
 declare variable $config:default-odd :="eebo.odd";
 
-declare variable $config:odd := $config:default-odd;
+(:~
+ : Complete list of ODD files used by the app. If you add another ODD to this list,
+ : make sure to run modules/generate-pm-config.xql to update the main configuration
+ : module for transformations (modules/pm-config.xql).
+ :)
+declare variable $config:odd-available :="eebo.odd";
+
+(:~
+ : List of ODD files which are used internally only, i.e. not for displaying information
+ : to the user.
+ :)
+declare variable $config:odd-internal := "eebo.odd";
 
 declare variable $config:odd-root := $config:app-root || "/resources/odd";
 
@@ -321,6 +364,8 @@ declare variable $config:repo-descriptor := doc(concat($config:app-root, "/repo.
 declare variable $config:expath-descriptor := doc(concat($config:app-root, "/expath-pkg.xml"))/expath:package;
 
 declare variable $config:session-prefix := $config:expath-descriptor/@abbrev/string();
+
+declare variable $config:default-fields := ();
 
 declare variable $config:dts-collections := map {
     "id": "default",
@@ -367,6 +412,93 @@ declare variable $config:dts-collections := map {
 };
 
 declare variable $config:dts-page-size := 10;
+
+declare variable $config:dts-import-collection := $config:data-default || "/playground";
+
+(:~
+ : Returns a default display configuration as a map for the given collection and
+ : document path. If an empty value is returned, the default configuration (as configured
+ : by global variables in this module) will be
+ : used. If a map is returned, it will be merged with the default configuration, so
+ : you can selectively overwrite particular settings.
+ :
+ : Change this to support different configurations for different collections or document types.
+ : By default this returns a configuration based on the default settings defined
+ : by other variables in this module.
+ : 
+ : @param $collection relative collection path (i.e. with $config:data-root stripped off)
+ : @param $docUri relative document path (including $collection)
+ :)
+declare function config:collection-config($collection as xs:string?, $docUri as xs:string?) {
+    (: Return empty sequence to use default config :)
+    ()
+
+    (: 
+     : Replace line above with the following code to switch between different view configurations per collection.
+     : $collection corresponds to the relative collection path (i.e. after $config:data-root). 
+     :)
+    (:
+    switch ($collection)
+        case "playground" return
+            map {
+                "odd": "dodis.odd",
+                "view": "body",
+                "depth": $config:pagination-depth,
+                "fill": $config:pagination-fill,
+                "template": "facsimile.html"
+            }
+        default return
+            ()
+    :)
+};
+
+(:~
+ : Helper function to retrieve the default config for the given document path.
+ : Delegates to config:collection-config().
+ :)
+declare function config:default-config($docUri as xs:string?) {
+    let $defaultConfig := map {
+        "odd": $config:default-odd,
+        "view": $config:default-view,
+        "depth": $config:pagination-depth,
+        "fill": $config:pagination-fill,
+        "template": $config:default-template
+    }
+    let $collection := 
+        if (exists($docUri)) then
+            replace($docUri, "^(.*)/[^/]+$", "$1") => substring-after($config:data-root || "/")
+        else
+            ()
+    let $collectionConfig :=
+        if (exists($docUri)) then
+            config:collection-config($collection, substring-after($docUri, $config:data-root || "/"))
+        else
+            config:collection-config((), ())
+    return
+        if (exists($collectionConfig)) then
+            map:merge(($defaultConfig, $collectionConfig))
+        else
+            $defaultConfig
+};
+
+declare function config:document-type($div as element()) {
+    switch (namespace-uri($div))
+        case "http://www.tei-c.org/ns/1.0" return
+            "tei"
+        case "http://docbook.org/ns/docbook" return
+            "docbook"
+        default return
+            "jats"
+};
+
+declare function config:get-document($idOrName as xs:string) {
+    if ($config:address-by-id) then
+        root(collection($config:data-root)/id($idOrName))
+    else if (starts-with($idOrName, '/')) then
+        doc(xmldb:encode-uri($idOrName))
+    else
+        doc(xmldb:encode-uri($config:data-root || "/" || $idOrName))
+};
 
 (:~
  : Return an ID which may be used to look up a document. Change this if the xml:id
