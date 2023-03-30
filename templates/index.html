@@ -260,9 +260,9 @@
                 <app-header-layout>
                 <app-header slot="header" reveals="reveals" fixed="fixed" effects="waterfall">
                     <app-toolbar class="menubar">
-                        <a href="${app}/index.html" class="logo" data-template="lib:parse-params"/>
+                        <a href="${app}/index.html" class="logo" data-template="pages:parse-params"/>
                         <pb-media-query query="(min-width: 1024px)">
-                            <a href="${app}/index.html" data-template="lib:parse-params">Start</a>
+                            <a href="${app}/index.html" data-template="pages:parse-params">Start</a>
                             <pb-restricted login="login" group="tei">
                                 <paper-menu-button>
                                     <a href="#" slot="dropdown-trigger">
@@ -276,13 +276,13 @@
                                         </paper-item>
                                         <paper-item data-template="pages:edit-odd-list"/>
                                         <paper-item>
-                                            <a href="${app}/api.html" data-template="lib:parse-params" target="_blank">API Documentation</a>
+                                            <a href="${app}/api.html" data-template="pages:parse-params" target="_blank">API Documentation</a>
                                         </paper-item>
                                     </paper-listbox>
                                 </paper-menu-button>
                             </pb-restricted>
                             <!-- Search input -->
-                            <pb-search action="${app}/search.html" data-template="lib:parse-params" value="${query}" redirect="redirect"/>
+                            <pb-search action="${app}/search.html" data-template="pages:parse-params" value="${query}" redirect="redirect"/>
 
                             <!-- language selector -->
                             <pb-lang name="lang" data-template="pages:languages"/>
@@ -295,7 +295,7 @@
                     <pb-media-query query="(max-width: 1023px)">
                         <app-toolbar class="toolbar" sticky="sticky">
                             <!-- Search input -->
-                            <pb-search action="${app}/search.html" data-template="lib:parse-params" value="${query}" redirect="redirect"/>
+                            <pb-search action="${app}/search.html" data-template="pages:parse-params" value="${query}" redirect="redirect"/>
                             <paper-icon-button icon="icons:menu" drawer-toggle="drawer-toggle"/>
                         </app-toolbar>
                     </pb-media-query>
@@ -313,7 +313,7 @@
                                     <pb-browse-docs id="document-list" url="api/collection" sort-options="[{&#34;label&#34;: &#34;browse.title&#34;, &#34;value&#34;: &#34;title&#34;},{&#34;label&#34;: &#34;browse.author&#34;, &#34;value&#34;: &#34;author&#34;}]" sort-by="title" filter-options="[{&#34;label&#34;: &#34;browse.title&#34;, &#34;value&#34;: &#34;title&#34;},{&#34;label&#34;: &#34;browse.author&#34;, &#34;value&#34;: &#34;author&#34;},{&#34;label&#34;: &#34;browse.file&#34;, &#34;value&#34;: &#34;file&#34;}]" filter-by="title" auto="auto" history="history" login="login" emit="docs" subscribe="docs">
                                         <pb-paginate slot="toolbar" id="paginate" per-page="10" range="5" emit="docs" subscribe="docs"/>
                                         <pb-restricted login="login" slot="toolbar">
-                                            <pb-ajax emit="docs" url="api/odd" method="post" data-template="lib:parse-params" event="pb-search-resubmit" title="Recompile ODD" data-i18n="[title]odd.manage.regenerate-all">
+                                            <pb-ajax emit="docs" url="api/odd" method="post" data-template="pages:parse-params" event="pb-search-resubmit" title="Recompile ODD" data-i18n="[title]odd.manage.regenerate-all">
                                                 <h3 slot="title">
                                                     <pb-i18n key="odd.manage.regenerate-all"/>
                                                 </h3>

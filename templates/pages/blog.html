@@ -103,7 +103,7 @@
                             <pb-collapse>
                                 <h3 slot="collapse-trigger">Articles</h3>
                                 <div slot="collapse-content">
-                                    <pb-load class="summary" url="doc/blog/list?doc=${doc}" auto="auto" emit="transcription" data-template="lib:parse-params"/>
+                                    <pb-load class="summary" url="doc/blog/list?doc=${doc}" auto="auto" emit="transcription" data-template="pages:parse-params"/>
                                 </div>
                             </pb-collapse>
                             <pb-collapse>
@@ -151,7 +151,7 @@
                                             </pb-download>
                                         </paper-item>
                                         <paper-item>
-                                            <a href="${app}/manage.html" data-template="lib:parse-params">
+                                            <a href="${app}/manage.html" data-template="pages:parse-params">
                                                 <pb-i18n key="menu.admin.appGenerator"/>
                                             </a>
                                         </paper-item>
@@ -172,7 +172,7 @@
                         <pb-media-query query="min-width: 1024px">
                             <aside>
                                 <h1>Blog</h1>
-                                <pb-load class="summary" url="doc/blog/list?doc=${doc}" auto="auto" emit="transcription" data-template="lib:parse-params"/>
+                                <pb-load class="summary" url="doc/blog/list?doc=${doc}" auto="auto" emit="transcription" data-template="pages:parse-params"/>
                             </aside>
                         </pb-media-query>
                         <div class="content">
