@@ -1,0 +1,12 @@
+body .logo {
+    background-image: url("../images/eebo-small.png");
+}
+
+body .splash {
+    background-image: url("../images/eebo-small.png");
+    background-size:120px auto;
+}
+
+body .menubar {
+    background-image: url("../images/eebo-bg.png");
+}

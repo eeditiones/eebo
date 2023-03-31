@@ -10,6 +10,7 @@
     <link rel="shortcut icon" type="image/png" href="resources/images/favicon-32.png" sizes="32x32"/>
     <link rel="shortcut icon" type="image/png" href="resources/images/favicon-64.png" sizes="64x64"/>
     <link rel="stylesheet" href="resources/css/theme.css"/>
+    <link rel="stylesheet" href="resources/css/eebo-theme.css"/>
     <script type="module" src="pb-components-bundle.js" data-template="pages:load-components"/>
     <custom-style>
         <style>
@@ -281,6 +282,9 @@
                                     </paper-listbox>
                                 </paper-menu-button>
                             </pb-restricted>
+                            <a href="https://github.com/eeditiones/eebo" title="View code on GitHub" class="gitlab">
+                                <img src="resources/images/github.svg"/>
+                            </a>
                             <!-- Search input -->
                             <pb-search action="${app}/search.html" data-template="pages:parse-params" value="${query}" redirect="redirect"/>
 

@@ -1,4 +1,4 @@
-<package xmlns="http://expath.org/ns/pkg" spec="1.0" version="0.3"
+<package xmlns="http://expath.org/ns/pkg" spec="1.0" version="0.4"
     name="https://e-editiones.org/apps/eebo" abbrev="eebo">
     <title>Early English Books Online</title>
     <dependency processor="http://exist-db.org" semver-min="5.3.0" />
